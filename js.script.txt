@@ -1,0 +1,93 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const mealPlanner = document.getElementById("meal-planner");
+  const expenseTracker = document.getElementById("expense-tracker");
+  const schedulePlanner = document.getElementById("schedule-planner");
+
+  const showSection = (section) => {
+    [mealPlanner, expenseTracker, schedulePlanner].forEach((sec) => {
+      sec.classList.add("hidden");
+    });
+    section.classList.remove("hidden");
+  };
+
+  document.getElementById("meal-btn").addEventListener("click", () => {
+    showSection(mealPlanner);
+  });
+
+  document.getElementById("expense-btn").addEventListener("click", () => {
+    showSection(expenseTracker);
+  });
+
+  document.getElementById("schedule-btn").addEventListener("click", () => {
+    showSection(schedulePlanner);
+  });
+
+  document
+    .getElementById("meal-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const diet = document.getElementById("diet").value;
+      const budget = document.getElementById("budget").value;
+      const healthGoals = document.getElementById("health-goals").value;
+
+      const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer YOUR_API_KEY"
+        },
+        body: JSON.stringify({
+          prompt: `Create a meal plan for someone with a ${diet} diet, a budget of ${budget}, and the health goals: ${healthGoals}.`,
+          max_tokens: 100
+        })
+      });
+      const data = await response.json();
+      document.getElementById("meal-output").textContent = data.choices[0].text;
+    });
+
+  document
+    .getElementById("expense-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const income = document.getElementById("income").value;
+      const expenses = document.getElementById("expenses").value;
+
+      const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer YOUR_API_KEY"
+        },
+        body: JSON.stringify({
+          prompt: `Create a financial plan for someone with a monthly income of ${income} and the following expenses: ${expenses}.`,
+          max_tokens: 100
+        })
+      });
+      const data = await response.json();
+      document.getElementById("expense-output").textContent =
+        data.choices[0].text;
+    });
+
+  document
+    .getElementById("schedule-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const tasks = document.getElementById("tasks").value;
+      const domain = document.getElementById("domain").value;
+
+      const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer YOUR_API_KEY"
+        },
+        body: JSON.stringify({
+          prompt: `Create a weekly schedule for someone in the ${domain} domain with the following tasks: ${tasks}.`,
+          max_tokens: 100
+        })
+      });
+      const data = await response.json();
+      document.getElementById("schedule-output").textContent =
+        data.choices[0].text;
+    });
+});
